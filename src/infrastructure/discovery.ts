@@ -21,7 +21,7 @@ export class PublicSourceAdapter implements JobSourceAdapter {
   private health: Source;
   constructor(
     source: Source,
-    private fetcher: typeof fetch = fetch,
+    private fetcher: typeof fetch = (...args) => globalThis.fetch(...args),
   ) {
     this.id = source.id;
     this.health = { ...source };
