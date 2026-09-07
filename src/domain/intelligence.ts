@@ -292,7 +292,7 @@ export function scoreJob(
     filteredReasons.push('Country outside filters');
   if (prefs.cities.length && !overlap(prefs.cities, words(j.location)).length)
     filteredReasons.push('City outside filters');
-  if (prefs.minSeniority && /junior|intern|graduate/.test(t))
+  if (prefs.minSeniority && /\b(junior|intern|graduate)\b/.test(t))
     filteredReasons.push('Junior role excluded');
   if (prefs.permanentOnly && /temporary|freelance|fixed.term|contract role/.test(t))
     filteredReasons.push('Non-permanent contract');

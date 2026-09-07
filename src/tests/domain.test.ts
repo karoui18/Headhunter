@@ -50,7 +50,8 @@ describe('evidence-based intelligence', () => {
   });
   it('does not claim eligibility from preferences', async () => {
     const j = await normalizeJob(raw);
-    const m = scoreJob(j, defaultProfile, defaultPreferences, []);
+    const emptyProfile = { ...defaultProfile, headline: '', targetRoles: [], domains: [], skills: [], certifications: [], languages: [] };
+    const m = scoreJob(j, emptyProfile, defaultPreferences, []);
     expect(m.eligibility).toBe(0);
     expect(m.warnings).toContain('Complete your factual profile to assess eligibility');
   });
@@ -60,6 +61,18 @@ describe('evidence-based intelligence', () => {
       scoreJob(j, defaultProfile, { ...defaultPreferences, excludeOnsite: true }, [])
         .filteredReasons,
     ).toContain('On-site excluded');
+  });
+  it('does not mistake "international" for "intern" when excluding junior roles', async () => {
+    const j = await normalizeJob(raw);
+    expect(
+      scoreJob(j, defaultProfile, { ...defaultPreferences, minSeniority: true }, [])
+        .filteredReasons,
+    ).not.toContain('Junior role excluded');
+    const grad = await normalizeJob({ ...raw, description: 'Graduate program, 0-1 years' });
+    expect(
+      scoreJob(grad, defaultProfile, { ...defaultPreferences, minSeniority: true }, [])
+        .filteredReasons,
+    ).toContain('Junior role excluded');
   });
   it('snooze contributes no preference signal', async () => {
     const j = await normalizeJob(raw);
